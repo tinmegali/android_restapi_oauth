@@ -20,8 +20,8 @@
 
 <p>
     Take a look at <em>WebSystique</em> tutorial about how to
-    <a href="http://websystique.com/spring-security/secure-spring-rest-api-using-oauth2/"></a>
-    <strong>Secure Spring REST API using OAuth2</strong>.
+    <a href="http://websystique.com/spring-security/secure-spring-rest-api-using-oauth2/">
+    <strong>Secure Spring REST API using OAuth2</strong></a>.
 </p>
 
 <p>
