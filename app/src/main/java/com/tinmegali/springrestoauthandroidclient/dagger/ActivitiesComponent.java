@@ -1,8 +1,9 @@
 package com.tinmegali.springrestoauthandroidclient.dagger;
 
-import com.tinmegali.springrestoauthandroidclient.LoginActivity;
+import com.tinmegali.springrestoauthandroidclient.DetailActivity;
+import com.tinmegali.springrestoauthandroidclient.NewUserActivity;
 import com.tinmegali.springrestoauthandroidclient.StarterActivity;
-import com.tinmegali.springrestoauthandroidclient.WelcomeActivity;
+
 import dagger.Component;
 
 import javax.inject.Singleton;
@@ -15,7 +16,7 @@ import javax.inject.Singleton;
 public interface ActivitiesComponent {
 
     StarterActivity inject ( StarterActivity activity );
-//    WelcomeActivity inject( WelcomeActivity activity );
-//    LoginActivity inject( LoginActivity activity );
+    DetailActivity inject(DetailActivity activity);
+    NewUserActivity inject( NewUserActivity activity );
 
 }

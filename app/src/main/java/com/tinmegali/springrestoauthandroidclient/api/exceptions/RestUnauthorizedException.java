@@ -1,4 +1,4 @@
-package com.tinmegali.springrestoauthandroidclient.api.errors;
+package com.tinmegali.springrestoauthandroidclient.api.exceptions;
 
 import com.tinmegali.springrestoauthandroidclient.models.ErrorUnauthorized;
 

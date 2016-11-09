@@ -1,6 +1,7 @@
 package com.tinmegali.springrestoauthandroidclient.api;
 
 import com.tinmegali.springrestoauthandroidclient.models.User;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.*;
@@ -14,7 +15,7 @@ import java.util.Map;
 public interface ApiEndpointInterface {
 
     @GET("/user/{id}/?")
-    Call<User> getUser(@Path("id") Integer id,
+    Call<User> getUser(@Path("id") String id,
                        @QueryMap Map<String, String> token);
 
     @GET("/user/?")
@@ -30,8 +31,8 @@ public interface ApiEndpointInterface {
                           @Body User user);
 
     @DELETE("/user/{id}/?")
-    Call<ResponseBody> deleteUser(@QueryMap Map<String, String> token,
-                                  @Path("id") Integer id);
+    Call<ResponseBody> deleteUser(@Path("id") String id,
+                                  @QueryMap Map<String, String> token);
 
     @DELETE("/user/?")
     Call<ResponseBody> deleteAllUsers(@QueryMap Map<String, String> token);

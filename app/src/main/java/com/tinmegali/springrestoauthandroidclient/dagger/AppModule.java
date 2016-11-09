@@ -1,12 +1,12 @@
 package com.tinmegali.springrestoauthandroidclient.dagger;
 
-import android.accounts.AccountManager;
 import android.content.SharedPreferences;
+
+import com.google.gson.Gson;
 import com.tinmegali.springrestoauthandroidclient.MyApplication;
 import com.tinmegali.springrestoauthandroidclient.api.ApiController;
 import com.tinmegali.springrestoauthandroidclient.api.OAuthManager;
-import com.tinmegali.springrestoauthandroidclient.security.MyAccountManager;
-import com.tinmegali.springrestoauthandroidclient.security.TokenAuthenticator;
+import com.tinmegali.springrestoauthandroidclient.api.TokenAuthenticator;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,24 +35,33 @@ public class AppModule {
 
     @Provides
     @Singleton
-    MyAccountManager providesAccountManager() {
-        return new MyAccountManager();
-    }
-
-    @Provides
     SharedPreferences providesPreferences() {
         return application.getSharedPreferences("user_prefs",0);
     }
 
     @Provides
-    OAuthManager providesOauthManager( SharedPreferences preferences) {
-        return new OAuthManager(preferences);
+    OkHttpClient providesOkHttpClient() {
+        return new OkHttpClient.Builder()
+                .authenticator( new TokenAuthenticator() )
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .build();
+    }
+
+    @Provides
+    Gson providesGson() {
+        return new Gson();
+    }
+
+    @Provides
+    OAuthManager providesOauthManager( SharedPreferences preferences, OkHttpClient client, Gson gson ) {
+        return new OAuthManager( preferences, client, gson );
     }
 
     @Singleton
     @Provides
-    ApiController providesApiController( OAuthManager oAuthManager ) {
-        return new ApiController( oAuthManager );
+    ApiController providesApiController( OAuthManager oAuthManager, OkHttpClient client ) {
+        return new ApiController( oAuthManager, client );
     }
 
 

@@ -2,8 +2,8 @@ package com.tinmegali.springrestoauthandroidclient.api;
 
 import android.util.Log;
 
-import com.tinmegali.springrestoauthandroidclient.api.errors.RestHttpException;
-import com.tinmegali.springrestoauthandroidclient.api.errors.RestUnauthorizedException;
+import com.tinmegali.springrestoauthandroidclient.api.exceptions.RestHttpException;
+import com.tinmegali.springrestoauthandroidclient.api.exceptions.RestUnauthorizedException;
 import com.tinmegali.springrestoauthandroidclient.models.User;
 
 import okhttp3.Authenticator;
@@ -11,6 +11,7 @@ import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okhttp3.Route;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -37,12 +38,10 @@ public class ApiController {
     private OkHttpClient client;
 
     @Inject
-    public ApiController( OAuthManager oAuthManager ) {
+    public ApiController( OAuthManager oAuthManager, OkHttpClient client ) {
 
         this.oAuthManager = oAuthManager;
-        this.client = new OkHttpClient.Builder()
-                .authenticator( getBasicAuth(ServerDetails.CLIENT, ServerDetails.SECRET) )
-                .build();
+        this.client = client;
 
         retrofit = new Retrofit.Builder()
                 .baseUrl( BASE_URL )
@@ -52,46 +51,46 @@ public class ApiController {
         api = retrofit.create( ApiEndpointInterface.class );
     }
 
-    private Authenticator getBasicAuth(final String username, final String password) {
-        return new Authenticator() {
-            private int mCounter = 0;
-
-            @Override
-            public Request authenticate(Route route, Response response) throws IOException {
-                Log.d("OkHttp", "authenticate(Route route, Response response) | mCounter = " + mCounter);
-                if (mCounter++ > 0) {
-                    Log.d("OkHttp", "authenticate(Route route, Response response) | I'll return null");
-                    return null;
-                } else {
-                    Log.d("OkHttp", "authenticate(Route route, Response response) | This is first time, I'll try to authenticate");
-                    String credential = Credentials.basic(username, password);
-                    return response.request().newBuilder().header("Authorization", credential).build();
-                }
-            }
-        };
+    private Map<String, String> getQueryMap( String token ) {
+        Map<String, String> map = new HashMap<>();
+        map.put("access_token", token);
+        return map;
     }
 
-    public List<User> getUsers() {
-        Log.d(TAG, "getUsers");
+    public List<User> getUsers() throws RestUnauthorizedException, RestHttpException, IOException {
+        //Log.d(TAG, "getUsers");
         // get valid token
-        try {
-            String token = oAuthManager.getValidToken();
-            Map<String, String> map= new HashMap<>();
-            map.put("access_token", token);
-            Call<List<User>> users = api.getUsers( map );
-            return users.execute().body();
+        String token = oAuthManager.getValidToken();
 
-        } catch (RestUnauthorizedException e) {
-            Log.d(TAG, "getUsers : RestUnauthorizedException");
-            e.printStackTrace();
-        } catch (RestHttpException e) {
-            Log.d(TAG, "getUsers : RestHttpException");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.d(TAG, "getUsers : IOException");
-            e.printStackTrace();
+        Call<List<User>> users = api.getUsers( getQueryMap( token ));
+        return users.execute().body();
+    }
+
+    public void deleteUser( String userId ) throws RestUnauthorizedException, RestHttpException, IOException {
+        //Log.d(TAG, "deleteUser:" + userId);
+        String token = oAuthManager.getValidToken();
+        if ( token != null ) {
+            Call<ResponseBody> responseCall = api.deleteUser(userId,getQueryMap(token));
+            responseCall.execute();
         }
-        return null;
+    }
+
+    public  User addUser( User user ) throws RestUnauthorizedException, RestHttpException, IOException {
+        //Log.d(TAG, "addUser");
+        String token = oAuthManager.getValidToken();
+        if ( token != null ) {
+            Call<User> newUserCall = api.createUser( getQueryMap(token), user );
+            return newUserCall.execute().body();
+        } return null;
+    }
+
+    public User getUser( String id ) throws RestUnauthorizedException, RestHttpException, IOException {
+        //Log.d(TAG, "getUser:" + id);
+        String token = oAuthManager.getValidToken();
+        if ( token != null ) {
+            Call<User> userCall = api.getUser(id, getQueryMap(token));
+            return userCall.execute().body();
+        } return null;
     }
 
 }

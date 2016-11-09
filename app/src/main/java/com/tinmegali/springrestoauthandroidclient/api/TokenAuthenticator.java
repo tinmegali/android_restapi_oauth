@@ -1,18 +1,18 @@
-package com.tinmegali.springrestoauthandroidclient.security;
+package com.tinmegali.springrestoauthandroidclient.api;
 
-import com.tinmegali.springrestoauthandroidclient.api.ServerDetails;
 import okhttp3.*;
 
 import java.io.IOException;
 
 /**
- * Created by tinmegali on 07/11/16.
+ * Authenticator used at {@link OkHttpClient} on 'access_token' and 'refresh_token' requests
  */
 public class TokenAuthenticator implements Authenticator {
 
     @Override
     public Request authenticate(Route route, Response response) throws IOException {
-        String credentials = Credentials.basic( ServerDetails.CLIENT, ServerDetails.SECRET );
+        String credentials =
+                Credentials.basic( ServerDetails.CLIENT, ServerDetails.SECRET );
         return response.request( ).newBuilder()
                 .addHeader("Authorization", credentials)
                 .build();

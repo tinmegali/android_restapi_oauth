@@ -1,4 +1,4 @@
-package com.tinmegali.springrestoauthandroidclient.api.errors;
+package com.tinmegali.springrestoauthandroidclient.api.exceptions;
 
 import com.tinmegali.springrestoauthandroidclient.models.ErrorHttp;
 
@@ -10,7 +10,9 @@ public class RestHttpException extends Exception {
     private ErrorHttp errorHttp;
 
     public RestHttpException(ErrorHttp errorHttp) {
-        super("HttpError code["+errorHttp.getStatus()+"] " + errorHttp.getError());
+        super("HttpError code["+errorHttp.getStatus()+"] \n" +
+               "Error: " + errorHttp.getError() + "\n" +
+                errorHttp.getMessage() );
         this.errorHttp = errorHttp;
 
     }
